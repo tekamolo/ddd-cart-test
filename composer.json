@@ -1,0 +1,22 @@
+{
+    "name": "afernandez/card-test",
+    "description": "ddd cart test",
+    "authors": [
+        {
+            "name": "Alfonso Fernandez",
+            "email": "afernandez@nord-pay.com"
+        }
+    ],
+    "require": {
+        "phpunit/phpunit": "^7.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shopping\\": "src",
+            "Tests\\": "Shopping\\Tests"
+        }
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^4.4"
+    }
+}
