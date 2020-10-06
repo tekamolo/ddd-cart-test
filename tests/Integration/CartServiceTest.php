@@ -17,6 +17,10 @@ class CartServiceTest extends \PHPUnit\Framework\TestCase
 {
     const MAXIMUM_DIFFERENT_PRODUCTS = 10;
     const MAXIMUM_ITEMS_PER_PRODUCT = 50;
+    const PRICE_PRODUCT_A = 10;
+    const PRICE_PRODUCT_A_WITH_DISCOUNT = 9;
+    const PRICE_PRODUCT_B = 8;
+    const PRICE_PRODUCT_B_WITH_DISCOUNT = 5;
     private $service;
     private $priceList;
     private $countryProvider;
@@ -118,32 +122,32 @@ class CartServiceTest extends \PHPUnit\Framework\TestCase
             '3 products A, discount' => [
                 'type' => "A",
                 'quantity' => 3,
-                'expectedTotalWithoutDiscount' => 30,
-                'expectedTotal' => 27
+                'expectedTotalWithoutDiscount' => self::PRICE_PRODUCT_A * 3,
+                'expectedTotal' => self::PRICE_PRODUCT_A_WITH_DISCOUNT * 3
             ],
             '2 products A, NO discount' => [
                 'type' => "A",
                 'quantity' => 2,
-                'expectedTotalWithoutDiscount' => 20,
-                'expectedTotalWithDiscount' => 20
+                'expectedTotalWithoutDiscount' => self::PRICE_PRODUCT_A * 2,
+                'expectedTotalWithDiscount' => self::PRICE_PRODUCT_A * 2
             ],
             '1 products A, NO discount' => [
                 'type' => "A",
                 'quantity' => 1,
-                'expectedTotalWithoutDiscount' => 10,
-                'expectedTotalWithDiscount' => 10
+                'expectedTotalWithoutDiscount' => self::PRICE_PRODUCT_A * 1,
+                'expectedTotalWithDiscount' => self::PRICE_PRODUCT_A * 1
             ],
             '2 products B, discount' => [
                 'type' => "B",
                 'quantity' => 2,
-                'expectedTotalWithoutDiscount' => 16,
-                'expectedTotal' => 10
+                'expectedTotalWithoutDiscount' => self::PRICE_PRODUCT_B * 2,
+                'expectedTotal' => self::PRICE_PRODUCT_B_WITH_DISCOUNT * 2
             ],
             '1 products B, NO discount' => [
                 'type' => "B",
                 'quantity' => 1,
-                'expectedTotalWithoutDiscount' => 8,
-                'expectedTotal' => 8
+                'expectedTotalWithoutDiscount' => self::PRICE_PRODUCT_B * 1,
+                'expectedTotal' => self::PRICE_PRODUCT_B * 1
             ],
         ];
     }
@@ -183,7 +187,7 @@ class CartServiceTest extends \PHPUnit\Framework\TestCase
 
         $cartAccounting = $this->service->getCartAccounting("1");
         $total = $cartAccounting->getTotal();
-        $this->assertEquals(10,$total);
+        $this->assertEquals(self::PRICE_PRODUCT_A,$total);
 
         $totalExchange = $cartAccounting->getTotalConvertedToCurrency();
         $this->assertEquals(13,$totalExchange);

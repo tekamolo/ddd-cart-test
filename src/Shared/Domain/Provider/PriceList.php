@@ -25,7 +25,7 @@ class PriceList implements PriceProvider
     private function priceLoader(CountryInterface $country){
         foreach ($this->prices as $key => $p){
             $this->pricesCollection->offsetSet($key,
-                new Price($key,$p['price'],$p['discountedPrice'],$p['discountQuantity'],$country)
+                new Price($p['price'],$p['discountedPrice'],$p['discountQuantity'],$country)
             );
         }
     }

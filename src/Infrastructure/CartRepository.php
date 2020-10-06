@@ -3,7 +3,6 @@
 namespace Shopping\Infrastructure;
 
 use Shopping\Domain\Cart;
-use Simara\Cart\Domain\Cart\CartNotFoundException;
 
 class CartRepository implements  \Shopping\Domain\CartRepository
 {

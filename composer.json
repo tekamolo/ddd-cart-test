@@ -18,6 +18,7 @@
         }
     },
     "require-dev": {
-        "symfony/var-dumper": "^4.4"
+        "symfony/var-dumper": "^4.4",
+        "dg/bypass-finals": "^1.2"
     }
 }
