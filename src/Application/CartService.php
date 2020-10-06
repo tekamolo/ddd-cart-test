@@ -5,10 +5,12 @@ namespace Shopping\Application;
 use Shopping\Domain\Cart;
 use Shopping\Domain\CartRepository;
 use Shopping\Domain\Country;
+use Shopping\Domain\CountryInterface;
 use Shopping\Domain\Exceptions\ProductNotInTheCartException;
 use Shopping\Domain\Product;
 use Shopping\Infrastructure\ItemNotInMemoryException;
 use Shopping\Shared\Domain\ItemNotInCollection;
+use Shopping\Shared\Domain\Provider\CurrencyRates;
 use Shopping\Shared\Domain\Provider\PriceList;
 
 class CartService
@@ -19,11 +21,14 @@ class CartService
 
     private $country;
 
-    public function __construct(CartRepository $repository,PriceList $priceList,Country $country)
+    private $currencyRates;
+
+    public function __construct(CartRepository $repository, PriceList $priceList, Country $country, CurrencyRates $currencyRates)
     {
         $this->cartRepository = $repository;
         $this->pricesList = $priceList;
         $this->country = $country;
+        $this->currencyRates = $currencyRates;
     }
 
     public function addProduct($cartId, $productId, $quantity){
@@ -50,7 +55,7 @@ class CartService
 
     public function getCartAccounting($cartId){
         $cart = $this->get($cartId);
-        return $cart->getCartAccounting($this->pricesList,$this->country);
+        return $cart->getCartAccounting($this->pricesList,$this->country,$this->currencyRates);
     }
 
     private function get(string $cartId): Cart

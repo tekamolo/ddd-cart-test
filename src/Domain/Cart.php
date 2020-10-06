@@ -4,6 +4,7 @@ namespace Shopping\Domain;
 use Shopping\Domain\Exceptions\ProductException;
 use Shopping\Shared\Domain\Collection;
 use Shopping\Shared\Domain\ItemNotInCollection;
+use Shopping\Shared\Domain\Provider\CurrencyRates;
 use Shopping\Shared\Domain\Provider\PriceList;
 use Symfony\Component\VarDumper\VarDumper;
 
@@ -54,11 +55,12 @@ final class Cart
         return new CartInventory($this->productCollection);
     }
 
-    public function getCartAccounting(PriceList $priceList,Country $country){
+    public function getCartAccounting(PriceList $priceList, CountryInterface $country,CurrencyRates $currencyRates){
         return new CartAccounting(
             $this->productCollection,
             $priceList,
-            $country
+            $country,
+            $currencyRates
         );
     }
 

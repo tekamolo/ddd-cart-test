@@ -11,7 +11,7 @@ class Price
 
     private $country;
 
-    public function __construct(string $productId, int $price, int $discountedPrice, int $discountMinimumQuantity, Country $country)
+    public function __construct(string $productId, int $price, int $discountedPrice, int $discountMinimumQuantity, CountryInterface $country)
     {
         $this->price = $price;
         $this->country = $country;

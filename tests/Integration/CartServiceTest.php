@@ -1,13 +1,16 @@
 <?php
 
-namespace Shopping\Tests;
+namespace Shopping\Tests\Integration;
 
+use PHPUnit\Framework\MockObject\MockBuilder;
 use Shopping\Application\CartService;
-use Shopping\Domain\Country;
+use Shopping\Domain\CountryInterface;
 use Shopping\Domain\Exceptions\ProductException;
 use Shopping\Domain\Exceptions\ProductNotInTheCartException;
-use Shopping\Domain\Spain;
+use Shopping\Domain\Country;
 use Shopping\Infrastructure\CartRepository;
+use Shopping\Shared\Domain\Provider\CountryProvider;
+use Shopping\Shared\Domain\Provider\CurrencyRates;
 use Shopping\Shared\Domain\Provider\PriceList;
 
 class CartServiceTest extends \PHPUnit\Framework\TestCase
@@ -16,16 +19,17 @@ class CartServiceTest extends \PHPUnit\Framework\TestCase
     const MAXIMUM_ITEMS_PER_PRODUCT = 50;
     private $service;
     private $priceList;
-    private $country;
+    private $countryProvider;
 
     public function setUp()
     {
+        $this->countryProvider = new CountryProvider();
         $this->priceList = new PriceList();
-        $this->country = new Spain();
         $this->service = new CartService(
             new CartRepository(),
             $this->priceList,
-            $this->country
+            $this->countryProvider->getCountry("USA"),
+            new CurrencyRates()
         );
     }
 
@@ -92,15 +96,16 @@ class CartServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     public function testTotalTwo(){
+        $country = $this->countryProvider->getCountry("Spain");
         $this->service->addProduct("1","A",1);
         $this->service->addProduct("1","A",1);
-        $totalA = $this->priceList->getPriceByProductId($this->country,"A")->getPriceVat() * 2;
+        $totalA = $this->priceList->getPriceByProductId($country,"A")->getPriceVat() * 2;
         $this->service->addProduct("1","B",1);
-        $totalB = $this->priceList->getPriceByProductId($this->country,"B")->getPriceVat() * 1;
+        $totalB = $this->priceList->getPriceByProductId($country,"B")->getPriceVat() * 1;
         $this->service->addProduct("1","C",1);
         $this->service->addProduct("1","C",1);
         $this->service->addProduct("1","C",1);
-        $totalC = $this->priceList->getPriceByProductId($this->country,"C")->getPriceVat() * 3;
+        $totalC = $this->priceList->getPriceByProductId($country,"C")->getPriceVat() * 3;
 
         $cartAccounting = $this->service->getCartAccounting("1");
         $total = $cartAccounting->getTotal();
@@ -159,5 +164,28 @@ class CartServiceTest extends \PHPUnit\Framework\TestCase
         $cartAccounting = $this->service->getCartAccounting("1");
         $this->assertEquals($expectedTotalWithoutDiscount,$cartAccounting->getTotalWithoutDiscount());
         $this->assertEquals($expectedTotal,$cartAccounting->getTotal());
+    }
+
+    public function testTotalExchangeRate(){
+        $this->countryProvider = new CountryProvider();
+        $this->priceList = new PriceList();
+
+        $mockCurrencyRate = $this->createMock(CurrencyRates::class);
+        $mockCurrencyRate->method("getRate")->willReturn(1.3);
+        $this->service = new CartService(
+            new CartRepository(),
+            $this->priceList,
+            $this->countryProvider->getCountry("USA"),
+            $mockCurrencyRate
+        );
+
+        $this->service->addProduct("1","A",1);
+
+        $cartAccounting = $this->service->getCartAccounting("1");
+        $total = $cartAccounting->getTotal();
+        $this->assertEquals(10,$total);
+
+        $totalExchange = $cartAccounting->getTotalConvertedToCurrency();
+        $this->assertEquals(13,$totalExchange);
     }
 }
