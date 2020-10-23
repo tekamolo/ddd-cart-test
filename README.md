@@ -14,3 +14,5 @@ To load the dependencies
 to run the tests:
 
 ``php vendor/phpunit/phpunit/phpunit``
+
+TODO: improve testing and adding features
